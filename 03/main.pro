@@ -1,13 +1,24 @@
-@bin2dec.pro
+@utils/bin2dec.pro
 
-file = 'data.dat'
+file = '03/data.dat'
 length = file_lines(file)
-data = intarr(12, file_lines(file))
+data = intarr(12, length)
 
 openr, 1, file
 readf, 1, data, format='(12I1)'
 close, 1
 
+; Challenge 1
+res = data # replicate(1,length)
+res[where(res lt length / 2)] = 0
+res[where(res ne 0)] = 1
+
+bin2dec, res, gamma
+bin2dec, (res-1)^2, epsilon
+
+print, 'power consumption: ', double(gamma * epsilon) 
+
+; Challenge 2
 oxigen = data
 carbon = data
 
@@ -18,12 +29,9 @@ for i=0, 11 do begin
     carbon = carbon[*,where(carbon[i,*] ne carfil)]
 end
 
-print, oxigen
-print, carbon
-
 bin2dec, oxigen, oxi
 bin2dec, carbon, car
 
-print, double(oxi * car)
+print, 'life support', double(oxi * car)
 
 end
