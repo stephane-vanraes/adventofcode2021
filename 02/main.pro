@@ -1,11 +1,6 @@
-;file = '02/test.dat'
-file = '02/data.dat'
+@utils/readcol.pro
 
-data = intarr(2, file_lines(file))
-
-openr, lun, file, /get_lun
-readf, lun, data
-close, lun
+readcol, '02/data.dat', data, columns=2
 
 ; Challenge 1
 

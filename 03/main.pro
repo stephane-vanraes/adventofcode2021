@@ -1,12 +1,9 @@
 @utils/bin2dec.pro
+@utils/readcol.pro
 
-file = '03/data.dat'
-length = file_lines(file)
-data = intarr(12, length)
+readcol, '03/data.dat', data, length, columns = 12, format='(12I1)'
 
-openr, 1, file
-readf, 1, data, format='(12I1)'
-close, 1
+print, length
 
 ; Challenge 1
 res = data # replicate(1,length)

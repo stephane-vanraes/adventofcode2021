@@ -1,13 +1,6 @@
-print, 1466, 1491
+@utils/readcol.pro
 
-file = '01/data.dat'
-c = file_lines(file)
-
-data = intarr(c)
-
-openr, lun, file, /get_lun
-readf, lun, data
-close, lun
+reacol, '01/data.dat', data, c
 
 print, 'Challenge 1:', total(data gt shift(data, 1))
 
