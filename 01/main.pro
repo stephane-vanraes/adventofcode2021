@@ -1,19 +1,19 @@
-;file = '01/test.dat'
-file = '01/data.dat'
+print, 1466, 1491
 
-data = intarr(file_lines(file))
+file = '01/data.dat'
+c = file_lines(file)
+
+data = intarr(c)
 
 openr, lun, file, /get_lun
 readf, lun, data
 close, lun
 
-; Challenge 1
-compare = shift(data, 1)
-print, 'result 1:', n_elements(where(data gt compare))
+print, 'Challenge 1:', total(data gt shift(data, 1))
 
-; Challenge 2
-data = data + shift(data,1) + shift(data,2)
-compare = shift(data, 1)
-print, 'result 2:', n_elements(where(data gt compare))
+for i=1, c - 2 do data[c-i] = total(data[c-i-2:c-i])
+
+print, 'Challenge 2:', total(data gt shift(data, 1)) - 2 ; wrapping correction
+
 
 end
