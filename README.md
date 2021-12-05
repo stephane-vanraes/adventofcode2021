@@ -18,3 +18,8 @@ in any other language I would have been able to do so and then map those words t
 
 split in two files: one for cards and one for pulls
 removed whitespace between cards
+
+**day 5**
+removed arrow
+replaced `,` with ` `
+`0,0 -> 1,1` becomes `0,0,1,1`
