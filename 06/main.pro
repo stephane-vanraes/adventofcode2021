@@ -3,23 +3,22 @@
 readcol, '06/data.dat', data
 
 days = 256
+
+daynumbers = indgen(days)
+
 spawns = dblarr(days)
+
 for i=0, n_elements(data) - 1 do begin
-    j = data[i]
-    while j lt days do begin
-        spawns[j] += 1d
-        j+=7
-    endwhile
+    spawns[where(daynumbers mod 7 eq data[i])] += 1d
 endfor
 
 for i=0, days-1 do begin
-    spawned = spawns[i]
-    j = i + 9
-    while j lt days do begin
-        spawns[j] += spawned
-        j+=7
-    endwhile
+    spawndays = where(daynumbers mod 7 eq (i + 9) mod 7 and daynumbers ge i + 9)
+    spawns[spawndays] += spawns[i]
 endfor
-print, 'Challenge 1:', double(n_elements(data) + total(spawns)), format='(d50.0)'
+
+print, n_elements(data) + total(spawns[0:79]), format='("Challenge 1: ", d20.0)'
+print, n_elements(data) + total(spawns), format='("Challenge 2: ", d20.0)'
+
 
 end
