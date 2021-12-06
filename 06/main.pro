@@ -1,30 +1,25 @@
 @utils/readcol.pro
 
-readcol, '06/test.dat', data
-days = 18
-data = transpose(data)
+readcol, '06/data.dat', data
 
-spawns = replicate(0, n_elements(data))
-
-for n=0, n_elements(data) - 1 do begin
-    if data[n] le 6 then first = n mod 7 else first = n mod 9
-    spawntime = (days - first)
-    spawned = (spawntime / 7) + 1
-    spawns[n] += (spawned * ((spawntime / 6) + 1)) / 2
+days = 256
+spawns = dblarr(days)
+for i=0, n_elements(data) - 1 do begin
+    j = data[i]
+    while j lt days do begin
+        spawns[j] += 1d
+        j+=7
+    endwhile
 endfor
 
-
-for n=1, days do begin
-    data = data - 1
-    willspawn = where(data eq -1)
-    if willspawn[0] eq -1 then continue
-
-    newfish = replicate(8, n_elements(willspawn))
-
-    data = [data, newfish]
-    data[where(data eq -1)] = 6
+for i=0, days-1 do begin
+    spawned = spawns[i]
+    j = i + 9
+    while j lt days do begin
+        spawns[j] += spawned
+        j+=7
+    endwhile
 endfor
+print, 'Challenge 1:', double(n_elements(data) + total(spawns)), format='(d50.0)'
 
-print, 'Challenge 1:', n_elements(data)
-print, 'Challenge 1b:', 5 + total(spawns)
 end
