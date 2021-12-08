@@ -1,6 +1,8 @@
 @utils/bin2dec.pro
 @utils/readcol.pro
 
+tic
+
 readcol, '03/data.dat', data, length, columns = 12, format='(12I1)'
 
 print, length
@@ -30,5 +32,7 @@ bin2dec, oxigen, oxi
 bin2dec, carbon, car
 
 print, 'life support', double(oxi * car)
+
+toc
 
 end

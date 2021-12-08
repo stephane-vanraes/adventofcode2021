@@ -1,10 +1,17 @@
-data = [0,1,2,3,4,5,6,7,8]
-spawns = replicate(.5, n_elements(data))
-firsts = replicate(0, n_elements(data))
-days = 14
+file = 'test.dat'
 
-data = data + [0,0,0,1]
+output = strarr(file_lines(file))
 
-print, data
-print, spawns
+openr, lun, file, /get_lun
+
+size = file_lines(file)
+readf, lun, output
+
+close, lun 
+free_lun, lun
+tokens = strarr(13, file_lines(file))
+for n=0, size-1 do tokens[*,n] = strsplit(output[n], /extract)
+
+print, tokens
+
 end
