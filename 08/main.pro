@@ -1,4 +1,4 @@
-file = '08/data.dat'
+file = '08/test.dat'
 
 tic
 
@@ -15,27 +15,21 @@ for n=0, size-1 do tokens[*,n] = strsplit(input[n], /extract)
 
 tests = intarr(7,10,size)
 values  = intarr(7,4,size)
+strarr = ['a','b','c','d','e','f','g']
+
 ;loop through tokens and fill tests and values
 for n=0, size-1 do begin
     for m=0, 9 do begin
         str = tokens[m,n]
-        tests[0,m,n] = strmatch(str, '*a*')
-        tests[1,m,n] = strmatch(str, '*b*')
-        tests[2,m,n] = strmatch(str, '*c*')
-        tests[3,m,n] = strmatch(str, '*d*')
-        tests[4,m,n] = strmatch(str, '*e*')
-        tests[5,m,n] = strmatch(str, '*f*')
-        tests[6,m,n] = strmatch(str, '*g*')
+        for s=0, 6 do begin
+            tests[s,m,n] = strmatch(str, '*' + strarr[s] + '*')
+        endfor
     endfor
     for m=0, 3 do begin
         str = tokens[m+11,n]
-        values[0,m,n] = strmatch(str, '*a*')
-        values[1,m,n] = strmatch(str, '*b*')
-        values[2,m,n] = strmatch(str, '*c*')
-        values[3,m,n] = strmatch(str, '*d*')
-        values[4,m,n] = strmatch(str, '*e*')
-        values[5,m,n] = strmatch(str, '*f*')
-        values[6,m,n] = strmatch(str, '*g*')
+        for s=0, 6 do begin
+            values[s,m,n] = strmatch(str, '*' + strarr[s] + '*')
+        endfor
     endfor
 endfor
 
@@ -83,8 +77,7 @@ for n=0, size-1 do begin
 
 endfor
 
-numbers = intarr(size)
-for n=0, size-1 do numbers[n] = total(decrypted[*,n] * [1000,100,10,1])
+numbers = decrypted ## transpose([1000,100,10,1])
 
 solution1 = n_elements(where(decrypted eq 1 or decrypted eq 4 or decrypted eq 7 or decrypted eq 8))
 solution2 = total(numbers)
