@@ -1,7 +1,9 @@
-file = '08/test.dat'
+file = '08/data.dat'
+
+tic
 
 size = file_lines(file)
-tokens = strarr(size)
+input = strarr(size)
 
 openr, lun, file, /get_lun
 readf, lun, input
@@ -11,21 +13,85 @@ free_lun, lun
 tokens = strarr(15, size)
 for n=0, size-1 do tokens[*,n] = strsplit(input[n], /extract)
 
-counts = intarr(10)
-
-for n=0, (size(tokens))[2] - 1 do begin
-    ones = where(strlen(tokens[11:*,n]) eq 2)
-    if ones[0] ne -1 then counts[1] += n_elements(ones)    
-    fours = where(strlen(tokens[11:*,n]) eq 4)
-    if fours[0] ne -1 then counts[4] += n_elements(fours)
-    sevens = where(strlen(tokens[11:*,n]) eq 3)
-    if sevens[0] ne -1 then counts[7] += n_elements(sevens)
-    eights = where(strlen(tokens[11:*,n]) eq 7)
-    if eights[0] ne -1 then counts[8] += n_elements(eights)
+tests = intarr(7,10,size)
+values  = intarr(7,4,size)
+;loop through tokens and fill tests and values
+for n=0, size-1 do begin
+    for m=0, 9 do begin
+        str = tokens[m,n]
+        tests[0,m,n] = strmatch(str, '*a*')
+        tests[1,m,n] = strmatch(str, '*b*')
+        tests[2,m,n] = strmatch(str, '*c*')
+        tests[3,m,n] = strmatch(str, '*d*')
+        tests[4,m,n] = strmatch(str, '*e*')
+        tests[5,m,n] = strmatch(str, '*f*')
+        tests[6,m,n] = strmatch(str, '*g*')
+    endfor
+    for m=0, 3 do begin
+        str = tokens[m+11,n]
+        values[0,m,n] = strmatch(str, '*a*')
+        values[1,m,n] = strmatch(str, '*b*')
+        values[2,m,n] = strmatch(str, '*c*')
+        values[3,m,n] = strmatch(str, '*d*')
+        values[4,m,n] = strmatch(str, '*e*')
+        values[5,m,n] = strmatch(str, '*f*')
+        values[6,m,n] = strmatch(str, '*g*')
+    endfor
 endfor
 
-solution1= counts[1] + counts[4] + counts[7] + counts[8]
+;loop through each line and decrypt
+decrypted = intarr(4,size)
 
-print, 'Challenge 1:', solution1
+for n=0, size-1 do begin
+    T = tests[*,*,n]
+    V = values[*,*,n]
+
+    Tcount = T ## [1,1,1,1,1,1,1]
+    key = intarr(7,10)
+    key[*,1] = T[*,where(Tcount eq 2)]
+    key[*,4] = T[*,where(Tcount eq 4)]
+    key[*,7] = T[*,where(Tcount eq 3)]
+    key[*,8] = T[*,where(Tcount eq 7)]
+    ; 6 pieces and one missing from one
+    key[*,6] = T[*, where(Tcount eq 6 and T ## key[*,1] eq 1)]
+    A = (where(key[*,7] ne key[*,1]))[0]
+    B = (where(key[*,1] eq 1 and key[*,6] ne key[*,1]))[0]
+    C = (where(key[*,6] eq 1 and key[*,1] eq 1))[0]
+    ; 6 pieces misses B
+    key[*,5] = T[*, where(Tcount eq 5 and T[B,*] eq 0)]
+    E = (where(key[*,6] ne key[*,5]))[0]
+    ; 6 pieces misses E
+    key[*,9] = T[*, where(Tcount eq 6 and T[E,*] eq 0)]
+    ; 5 pieces misses C
+    key[*,2] = T[*, where(Tcount eq 5 and T[C,*] eq 0)]
+    FC = where(key[*,2] eq 0)
+    F = FC[(where(FC ne C))[0]]
+    ; 5 pieces not E and F
+    key[*,3] = T[*, where(Tcount eq 5 and T[E,*] eq 0 and T[F,*] eq 0)]
+    DC = where(key[*,4] eq 0)
+    D = DC[(where(DC ne A and DC ne E))[0]]
+    GC = [0,1,2,3,4,5,6]
+    G = where(GC ne A and GC ne B and GC ne C and GC ne D and GC ne E and GC ne F)
+    key[*,0] = T[*, where(Tcount eq 6 and T[G,*] eq 0)]
+    
+    for m=0, 3 do begin
+        value = values[*,m,n]
+        for i=0, 9 do begin
+            if total(value and key[*,i]) eq total(key[*,i]) and total(key[*,i]) eq total(value) then decrypted[m,n] = i        
+        endfor
+    endfor
+
+endfor
+
+numbers = intarr(size)
+for n=0, size-1 do numbers[n] = total(decrypted[*,n] * [1000,100,10,1])
+
+solution1 = n_elements(where(decrypted eq 1 or decrypted eq 4 or decrypted eq 7 or decrypted eq 8))
+solution2 = total(numbers)
+
+print, solution1, format='("Challenge 1: ", d20.0)'
+print, solution2, format='("Challenge 2: ", d20.0)'
+
+toc
 
 end
