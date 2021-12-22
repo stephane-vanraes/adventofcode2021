@@ -1,7 +1,7 @@
 pro readcol, file, output, size, columns=columns, format=format
     if not keyword_set(columns) then columns = 1
 
-    output = intarr(columns, file_lines(file))
+    output = dblarr(columns, file_lines(file))
     
     openr, lun, file, /get_lun
 
